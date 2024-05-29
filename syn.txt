@@ -1,0 +1,220 @@
+
+WHERE
+SELECT * FROM Customers
+WHERE Country='Mexico';
+WHERE CustomerID=1;
+WHERE CustomerID > 80;
+************************************************************************
+ORDER BY
+SELECT * FROM Products
+ORDER BY Price;
+SELECT column1, column2, ...
+FROM table_name
+ORDER BY column1, column2, ... ASC|DESC;
+************************************************************************
+AND
+SELECT *
+FROM Customers
+WHERE Country = 'Spain' AND CustomerName LIKE 'G%';
+************************************************************************
+INSERT INTO
+INSERT INTO table_name (column1, column2, column3, ...)
+VALUES (value1, value2, value3, ...);
+************************************************************************
+UPDATE
+UPDATE table_name
+SET column1 = value1, column2 = value2, ...
+WHERE condition;
+************************************************************************
+Aggregate Functions
+•	MIN() 
+•	MAX()  
+•	COUNT()
+•	SUM() 
+•	AVG()
+
+SELECT MIN(Price)
+FROM Products;
+************************************************************************
+SQL Joins:-
+SELECT Orders.OrderID, Customers.CustomerName, Orders.OrderDate
+FROM Orders
+INNER JOIN Customers ON Orders.CustomerID=Customers.CustomerID;
+************************************************************************
+INNER JOIN
+SELECT ProductID, ProductName, CategoryName
+FROM Products
+INNER JOIN Categories ON Products.CategoryID = Categories.CategoryID;
+syntx:-
+<
+SELECT column_name(s)
+FROM table1
+INNER JOIN table2
+ON table1.column_name = table2.column_name;
+>
+************************************************************************
+LEFT JOIN
+SELECT column_name(s)
+FROM table1
+LEFT JOIN table2
+ON table1.column_name = table2.column_name;
+
+Example:-
+SELECT Customers.CustomerName, Orders.OrderID
+FROM Customers
+LEFT JOIN Orders ON Customers.CustomerID = Orders.CustomerID
+ORDER BY Customers.CustomerName;
+************************************************************************
+RIGHT JOIN
+SELECT column_name(s)
+FROM table1
+RIGHT JOIN table2
+ON table1.column_name = table2.column_name;
+
+Example:-
+SELECT Orders.OrderID, Employees.LastName, Employees.FirstName
+FROM Orders
+RIGHT JOIN Employees ON Orders.EmployeeID = Employees.EmployeeID
+ORDER BY Orders.OrderID;
+************************************************************************
+FULL OUTER JOIN
+SELECT column_name(s)
+FROM table1
+FULL OUTER JOIN table2
+ON table1.column_name = table2.column_name
+WHERE condition;
+
+Example:-
+SELECT Customers.CustomerName, Orders.OrderID
+FROM Customers
+FULL OUTER JOIN Orders ON Customers.CustomerID=Orders.CustomerID
+ORDER BY Customers.CustomerName;
+************************************************************************
+GROUP BY
+SELECT COUNT(CustomerID), Country
+FROM Customers
+GROUP BY Country;
+************************************************************************
+************************************************************************
+PRIMARY KEY and FOREIGN KEY
+CREATE TABLE Persons (
+    ID int NOT NULL,
+    LastName varchar(255) NOT NULL,
+    FirstName varchar(255),
+    Age int,
+    PRIMARY KEY (ID)
+);
+************************************************************************
+CREATE TABLE Orders (
+    OrderID int NOT NULL,
+    OrderNumber int NOT NULL,
+    PersonID int,
+    PRIMARY KEY (OrderID),
+    FOREIGN KEY (PersonID) REFERENCES Persons(PersonID)
+);
+************************************************************************
+************************************************************************
+CREATE VIEW
+<
+CREATE VIEW view_name AS
+SELECT column1, column2, ...
+FROM table_name
+WHERE condition;
+>
+
+CREATE VIEW [Brazil Customers] AS
+SELECT CustomerName, ContactName
+FROM Customers
+WHERE Country = 'Brazil';
+
+view for 2 tables combine 
+CREATE VIEW CombinedData AS
+SELECT Customers.CustomerName, Orders.OrderDate
+FROM Customers
+JOIN Orders ON Customers.CustomerID = Orders.CustomerID;
+	
+************************************************************************
+
+Cursors
+
+DELIMITER //
+
+CREATE PROCEDURE cursor_example()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE emp_name VARCHAR(100);
+    DECLARE emp_cursor CURSOR FOR SELECT name FROM employees;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN emp_cursor;
+    read_loop: LOOP
+        FETCH emp_cursor INTO emp_name;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+        -- Do something with emp_name
+        SELECT emp_name;
+    END LOOP;
+
+    CLOSE emp_cursor;
+END //
+
+DELIMITER ;
+
+********************************************************************
+Stored Procedures
+
+DELIMITER //
+
+CREATE PROCEDURE add_employee(IN name VARCHAR(100), IN age INT)
+BEGIN
+    INSERT INTO employees (name, age) VALUES (name, age);
+END //
+
+DELIMITER ;
+
+******************************************************************
+Stored Function
+
+DELIMITER //
+
+CREATE FUNCTION calculate_bonus(salary DECIMAL(10,2)) RETURNS DECIMAL(10,2)
+BEGIN
+    RETURN salary * 0.10;
+END //
+
+DELIMITER ;
+
+*****************************************************************
+
+ Triggers
+DELIMITER //
+
+CREATE TRIGGER before_employee_insert
+BEFORE INSERT ON employees
+FOR EACH ROW
+BEGIN
+    SET NEW.created_at = NOW();
+END //
+
+DELIMITER ;
+**************************************************************************
+
+Sub-queries
+SELECT name
+FROM employees
+WHERE age > (SELECT AVG(age) FROM employees);
+********************************************************************
+
+Correlated Sub-queries
+SELECT e1.name, e1.age
+FROM employees e1
+WHERE e1.age > (SELECT AVG(e2.age) FROM employees e2 WHERE e1.department_id = e2.department_id);
+*******************************************************************
+
+IN Operator
+SELECT name
+FROM employees
+WHERE department_id IN (1, 2, 3);
+******************************************************************
+
